@@ -336,6 +336,7 @@ nav.bottom button.active{background:linear-gradient(135deg,#F9E3EA,#EBDFF8);colo
   .auth-screen p{font-size:14px;line-height:1.5;color:var(--ink-soft);margin:0 0 22px}
   .auth-button{width:100%;border:0;border-radius:17px;padding:15px 18px;background:var(--accent-grad);color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(227,170,221,.4);cursor:pointer}
   .auth-note{font-size:12px;color:var(--ink-soft);margin-top:15px;line-height:1.45}
+  .auth-debug{font-size:12px;line-height:1.45;text-align:left;overflow-wrap:anywhere;margin:0 0 14px;padding:10px 12px;border-radius:12px}
   .account-card{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   .account-card .account-info{flex:1;min-width:0}
   .account-card .account-email{font-size:13px;color:var(--ink-soft);overflow-wrap:anywhere;margin-top:3px}
@@ -351,7 +352,7 @@ nav.bottom button.active{background:linear-gradient(135deg,#F9E3EA,#EBDFF8);colo
 <input type="file" id="importFile" class="file-hidden" accept="application/json">
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, signOut, onAuthStateChanged, getRedirectResult } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -651,13 +652,24 @@ function renderAuthLoading(message){
   document.querySelector('nav.bottom').style.display='none';
   root.innerHTML='<div class="auth-screen"><div class="auth-flower">🌸</div><h1>Мой ритм</h1><p>'+esc(message||'Подключаем твои данные…')+'</p></div>';
 }
+function authErrorDetails(err, fallback){
+  var code = err && err.code ? String(err.code) : 'код не указан';
+  var message = err && err.message ? String(err.message) : (fallback || 'Подробности ошибки не получены.');
+  return (fallback ? fallback + ' ' : '') + 'Код: ' + code + '. Сообщение: ' + message;
+}
 function renderAuthScreen(errorText){
   document.querySelector('nav.bottom').style.display='none';
   root.innerHTML='<div class="auth-screen"><div class="auth-flower">🌸</div><h1>Мой ритм</h1><p>Войди через Google, чтобы хранить свои привычки и прогресс в личном облачном пространстве.</p>'+
-    (errorText?'<div class="err-msg">'+esc(errorText)+'</div>':'')+
+    (errorText?'<div class="err-msg auth-debug">'+esc(errorText)+'</div>':'')+
     '<button class="auth-button" id="googleSignInBtn">Продолжить с Google</button><div class="auth-note">У каждого аккаунта свои привычки, отметки и статистика.</div></div>';
   document.getElementById('googleSignInBtn').addEventListener('click',function(){
-    signInWithPopup(auth, googleProvider).catch(function(err){ console.error('Ошибка входа Google',err); renderAuthScreen('Не удалось войти через Google. Попробуй ещё раз. Код ошибки: '+(err.code||'неизвестная ошибка')); });
+    var btn=document.getElementById('googleSignInBtn');
+    btn.disabled=true;
+    btn.textContent='Переходим к Google…';
+    signInWithRedirect(auth, googleProvider).catch(function(err){
+      console.error('Ошибка запуска входа Google',err);
+      renderAuthScreen(authErrorDetails(err,'Не удалось начать вход через Google.'));
+    });
   });
 }
 function renderAuthError(message){
@@ -1437,10 +1449,34 @@ function confirmResetAll(){
 /* ===================== ЗАПУСК ===================== */
 buildNav();
 renderAuthLoading('Проверяем вход в аккаунт…');
-onAuthStateChanged(auth,function(user){
-  if(user) initializeUserData(user);
-  else handleSignOut();
-});
+
+// Сначала дожидаемся обработки результата Google Redirect и только потом
+// подписываемся на состояние авторизации. Это исключает гонку, при которой
+// начальный null от onAuthStateChanged успевает показать экран входа.
+(async function startAuthentication(){
+  var redirectError = null;
+  try{
+    await getRedirectResult(auth);
+  }catch(err){
+    redirectError = err;
+    console.error('Ошибка возврата после входа Google',err);
+  }
+
+  onAuthStateChanged(auth,function(user){
+    if(user){
+      initializeUserData(user);
+    }else{
+      currentUser=null;
+      cloudReady=false;
+      cloudDocRef=null;
+      state=defaultData();
+      renderAuthScreen(redirectError ? authErrorDetails(redirectError,'Google не завершил вход.') : '');
+    }
+  },function(err){
+    console.error('Ошибка отслеживания состояния авторизации',err);
+    renderAuthScreen(authErrorDetails(err,'Не удалось проверить состояние входа.'));
+  });
+})();
 })();
 </script>
 </body>
