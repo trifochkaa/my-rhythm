@@ -351,7 +351,7 @@ nav.bottom button.active{background:linear-gradient(135deg,#F9E3EA,#EBDFF8);colo
 <input type="file" id="importFile" class="file-hidden" accept="application/json">
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, signOut, onAuthStateChanged, getRedirectResult } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
 import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -657,7 +657,7 @@ function renderAuthScreen(errorText){
     (errorText?'<div class="err-msg">'+esc(errorText)+'</div>':'')+
     '<button class="auth-button" id="googleSignInBtn">Продолжить с Google</button><div class="auth-note">У каждого аккаунта свои привычки, отметки и статистика.</div></div>';
   document.getElementById('googleSignInBtn').addEventListener('click',function(){
-    signInWithRedirect(auth, googleProvider).catch(function(err){ console.error(err); renderAuthScreen('Не удалось начать вход. Попробуй ещё раз.'); });
+    signInWithPopup(auth, googleProvider).catch(function(err){ console.error('Ошибка входа Google',err); renderAuthScreen('Не удалось войти через Google. Попробуй ещё раз. Код ошибки: '+(err.code||'неизвестная ошибка')); });
   });
 }
 function renderAuthError(message){
@@ -1437,7 +1437,6 @@ function confirmResetAll(){
 /* ===================== ЗАПУСК ===================== */
 buildNav();
 renderAuthLoading('Проверяем вход в аккаунт…');
-getRedirectResult(auth).catch(function(err){ console.error('Ошибка возврата после входа Google',err); });
 onAuthStateChanged(auth,function(user){
   if(user) initializeUserData(user);
   else handleSignOut();
