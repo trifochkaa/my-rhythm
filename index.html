@@ -253,6 +253,19 @@
  --shadow-sm:0 4px 18px rgba(200,168,233,.20); --shadow-md:0 10px 32px rgba(200,168,233,.34);
  --radius-lg:26px; --radius-md:20px;
  --accent-grad:linear-gradient(135deg,#F6BCBA 0%,#E3AADD 55%,#C8A8E9 100%);
+ /* Дополнительные оттенки для карточек привычек */
+ --mint-bg:#E2F3EC;       --mint-dot:#8BCDB5;       --mint-text:#438A70;
+ --sage-bg:#E9F0E2;       --sage-dot:#A9C18F;       --sage-text:#66834F;
+ --lavender-bg:#F0E8FA;   --lavender-dot:#C5A8E8;   --lavender-text:#8060AA;
+ --lilac-bg:#F5E8F2;      --lilac-dot:#D9A9CE;      --lilac-text:#9A648F;
+ --rose-bg:#F9E4E9;       --rose-dot:#E99CAF;       --rose-text:#AD5C73;
+ --coral-bg:#FBE8E1;      --coral-dot:#F0A18C;      --coral-text:#B96B57;
+ --apricot-bg:#FCEEDC;    --apricot-dot:#E9B879;    --apricot-text:#A9793F;
+ --lemon-bg:#F8F2D9;      --lemon-dot:#DCC76F;      --lemon-text:#95813A;
+ --aqua-bg:#E0F2F4;       --aqua-dot:#83C7D0;       --aqua-text:#438A94;
+ --sky-bg:#E4F0FA;        --sky-dot:#8CB9E2;        --sky-text:#527FA8;
+ --periwinkle-bg:#E8EAF9; --periwinkle-dot:#A5ADE3; --periwinkle-text:#6873AE;
+ --plum-bg:#F0E4F0;       --plum-dot:#B98CB8;       --plum-text:#805A80;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Rounded","SF Pro Text","Segoe UI",Roboto,sans-serif;
  background:linear-gradient(180deg,#F4E7F0 0%,#FBF5F9 38%,#F6F0FB 100%) fixed; background-color:#FBF5F9;}
@@ -326,21 +339,13 @@ nav.bottom button.active{background:linear-gradient(135deg,#F9E3EA,#EBDFF8);colo
 .switch input:checked + .track{background:#C8A8E9}
 .period-card.current{border:1.5px solid #E3AADD}
 .settings-row .em{margin-right:10px}
-</style>
 
+/* Расширенные каталоги в форме привычки */
+.color-grid{gap:13px; padding:3px 2px 7px;}
+.swatch{width:40px;height:40px;flex:0 0 40px;box-shadow:inset 0 0 0 1px rgba(58,47,74,.06);}
+.emoji-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-height:54vh;overflow-y:auto;padding:4px 3px 10px;overscroll-behavior:contain;}
+.emoji-tile{min-height:84px;}
 
-<style>
-  .auth-screen{max-width:440px;margin:9vh auto 0;padding:26px 22px;background:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.9);border-radius:28px;box-shadow:var(--shadow-md);text-align:center}
-  .auth-flower{font-size:54px;margin-bottom:10px}
-  .auth-screen h1{font-size:25px;margin:0 0 8px;color:var(--ink)}
-  .auth-screen p{font-size:14px;line-height:1.5;color:var(--ink-soft);margin:0 0 22px}
-  .auth-button{width:100%;border:0;border-radius:17px;padding:15px 18px;background:var(--accent-grad);color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:700;box-shadow:0 8px 20px rgba(227,170,221,.4);cursor:pointer}
-  .auth-note{font-size:12px;color:var(--ink-soft);margin-top:15px;line-height:1.45}
-  .auth-debug{font-size:12px;line-height:1.45;text-align:left;overflow-wrap:anywhere;margin:0 0 14px;padding:10px 12px;border-radius:12px}
-  .account-card{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .account-card .account-info{flex:1;min-width:0}
-  .account-card .account-email{font-size:13px;color:var(--ink-soft);overflow-wrap:anywhere;margin-top:3px}
-  .account-card .btn{width:auto;box-shadow:none}
 </style>
 
 </head>
@@ -350,25 +355,7 @@ nav.bottom button.active{background:linear-gradient(135deg,#F9E3EA,#EBDFF8);colo
 <div id="sheetOverlay" class="sheet-overlay" aria-hidden="true"><div class="sheet" id="sheetContent" role="dialog" aria-modal="true"></div></div>
 <div id="toast" class="toast"></div>
 <input type="file" id="importFile" class="file-hidden" accept="application/json">
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, signOut, onAuthStateChanged, getRedirectResult } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC13B7AX7cSHZZk80dliB_3GPG8thaCdkk",
-  authDomain: "my-rhythm-katya.firebaseapp.com",
-  projectId: "my-rhythm-katya",
-  storageBucket: "my-rhythm-katya.firebasestorage.app",
-  messagingSenderId: "645459303873",
-  appId: "1:645459303873:web:2ff8695ad9b92c94372340"
-};
-const firebaseApp = initializeApp(firebaseConfig);
-const auth = getAuth(firebaseApp);
-const db = getFirestore(firebaseApp);
-const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({ prompt: 'select_account' });
-
+<script>
 (function(){
 "use strict";
 
@@ -435,16 +422,28 @@ function makeId(){ return 'id-' + Date.now().toString(36) + '-' + Math.random().
 
 /* ===================== ЦВЕТОВАЯ ПАЛИТРА ===================== */
 var PALETTE = [
-  {key:'pink',   label:'Розовый',    bg:'var(--pink-bg)',   dot:'var(--pink-dot)',   text:'var(--pink-text)'},
-  {key:'purple', label:'Сиреневый',  bg:'var(--purple-bg)', dot:'var(--purple-dot)', text:'var(--purple-text)'},
-  {key:'blue',   label:'Голубой',    bg:'var(--blue-bg)',   dot:'var(--blue-dot)',   text:'var(--blue-text)'},
-  {key:'green',  label:'Зелёный',    bg:'var(--green-bg)',  dot:'var(--green-dot)',  text:'var(--green-text)'},
-  {key:'peach',  label:'Персиковый', bg:'var(--peach-bg)',  dot:'var(--peach-dot)',  text:'var(--peach-text)'},
-  {key:'yellow', label:'Жёлтый',     bg:'var(--yellow-bg)', dot:'var(--yellow-dot)', text:'var(--yellow-text)'},
-  {key:'navy',   label:'Синий',      bg:'var(--navy-bg)',   dot:'var(--navy-dot)',   text:'var(--navy-text)'},
-  {key:'light',  label:'Светлый',    bg:'var(--light-bg)',  dot:'var(--light-dot)',  text:'var(--light-text)'}
+  {key:'pink',       label:'Пудровый',       bg:'var(--pink-bg)',       dot:'var(--pink-dot)',       text:'var(--pink-text)'},
+  {key:'purple',     label:'Лавандовый',     bg:'var(--purple-bg)',     dot:'var(--purple-dot)',     text:'var(--purple-text)'},
+  {key:'blue',       label:'Сиренево-голубой',bg:'var(--blue-bg)',      dot:'var(--blue-dot)',      text:'var(--blue-text)'},
+  {key:'green',      label:'Розово-сиреневый',bg:'var(--green-bg)',     dot:'var(--green-dot)',     text:'var(--green-text)'},
+  {key:'peach',      label:'Персиковый',     bg:'var(--peach-bg)',      dot:'var(--peach-dot)',      text:'var(--peach-text)'},
+  {key:'yellow',     label:'Молочно-розовый',bg:'var(--yellow-bg)',     dot:'var(--yellow-dot)',     text:'var(--yellow-text)'},
+  {key:'navy',       label:'Синий',          bg:'var(--navy-bg)',       dot:'var(--navy-dot)',       text:'var(--navy-text)'},
+  {key:'light',      label:'Светлый',        bg:'var(--light-bg)',      dot:'var(--light-dot)',      text:'var(--light-text)'},
+  {key:'mint',       label:'Мятный',         bg:'var(--mint-bg)',       dot:'var(--mint-dot)',       text:'var(--mint-text)'},
+  {key:'sage',       label:'Шалфейный',      bg:'var(--sage-bg)',       dot:'var(--sage-dot)',       text:'var(--sage-text)'},
+  {key:'lavender',   label:'Светлая лаванда',bg:'var(--lavender-bg)',   dot:'var(--lavender-dot)',   text:'var(--lavender-text)'},
+  {key:'lilac',      label:'Сиреневый',      bg:'var(--lilac-bg)',      dot:'var(--lilac-dot)',      text:'var(--lilac-text)'},
+  {key:'rose',       label:'Розовый',        bg:'var(--rose-bg)',       dot:'var(--rose-dot)',       text:'var(--rose-text)'},
+  {key:'coral',      label:'Коралловый',     bg:'var(--coral-bg)',      dot:'var(--coral-dot)',      text:'var(--coral-text)'},
+  {key:'apricot',    label:'Абрикосовый',    bg:'var(--apricot-bg)',    dot:'var(--apricot-dot)',    text:'var(--apricot-text)'},
+  {key:'lemon',      label:'Лимонный',       bg:'var(--lemon-bg)',      dot:'var(--lemon-dot)',      text:'var(--lemon-text)'},
+  {key:'aqua',       label:'Аквамариновый',  bg:'var(--aqua-bg)',       dot:'var(--aqua-dot)',       text:'var(--aqua-text)'},
+  {key:'sky',        label:'Небесный',       bg:'var(--sky-bg)',        dot:'var(--sky-dot)',        text:'var(--sky-text)'},
+  {key:'periwinkle', label:'Барвинок',       bg:'var(--periwinkle-bg)', dot:'var(--periwinkle-dot)', text:'var(--periwinkle-text)'},
+  {key:'plum',       label:'Сливовый',       bg:'var(--plum-bg)',       dot:'var(--plum-dot)',       text:'var(--plum-text)'}
 ];
-var PICKER_KEYS = ['pink','purple','blue','green','peach','yellow'];
+var PICKER_KEYS = PALETTE.map(function(p){ return p.key; });
 function paletteByKey(key){
   for(var i=0;i<PALETTE.length;i++){ if(PALETTE[i].key === key) return PALETTE[i]; }
   return PALETTE[0];
@@ -496,7 +495,7 @@ function migrateState(parsed){
   return parsed;
 }
 
-var state = defaultData();
+var state = loadState();
 
 function loadState(){
   try{
@@ -509,33 +508,15 @@ function loadState(){
     return defaultData();
   }
 }
-var currentUser = null;
-var cloudReady = false;
-var cloudDocRef = null;
-var cloudUnsubscribe = null;
-var cloudSaveQueue = Promise.resolve();
-var cloudErrorShown = false;
-function userStorageKey(uid){ return STORAGE_KEY + '_user_' + uid; }
 function saveState(){
   try{
-    if(currentUser) localStorage.setItem(userStorageKey(currentUser.uid), JSON.stringify(state));
-    else localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    return true;
   }catch(e){
-    console.error('Ошибка локального сохранения', e);
+    console.error('Ошибка сохранения', e);
     showToast('⚠️ Не удалось сохранить данные на устройстве');
     return false;
   }
-  if(currentUser && cloudReady && cloudDocRef){
-    var snapshot = JSON.parse(JSON.stringify(state));
-    var targetRef = cloudDocRef;
-    cloudSaveQueue = cloudSaveQueue.then(function(){
-      return setDoc(targetRef, { state:snapshot, updatedAt:serverTimestamp() }, { merge:true });
-    }).catch(function(err){
-      console.error('Ошибка сохранения в Firestore', err);
-      if(!cloudErrorShown){ cloudErrorShown=true; showToast('⚠️ Не удалось синхронизировать данные с облаком'); }
-    });
-  }
-  return true;
 }
 
 /* ===================== ДОСТУП К ДАННЫМ ===================== */
@@ -630,12 +611,39 @@ function todayProgress(){
 
 /* ===================== ЯДРО НОВОГО UI ===================== */
 function esc(s){ var d=document.createElement('div'); d.textContent=s==null?'':String(s); return d.innerHTML; }
-PALETTE.forEach(function(p){ p.label={pink:'Пудровый',purple:'Лавандовый',blue:'Сиренево-голубой',green:'Розово-сиреневый',peach:'Персиковый',yellow:'Молочно-розовый',navy:'Синий',light:'Светлый'}[p.key]||p.label; });
+// Названия цветов уже заданы в палитре выше.
 var root=document.getElementById('app');
 var currentTab='home', weekOffset=0, progRange='week';
-var EMOJI_CATALOG=[ /* для расширения каталога просто добавьте {e:'🌿',l:'Подпись'} */
- {e:'🧘🏻‍♀️',l:'Спорт и йога'},{e:'📚',l:'Чтение'},{e:'🧴',l:'Уход за собой'},{e:'🎓',l:'Обучение'},{e:'💧',l:'Вода'},
- {e:'🥗',l:'Питание'},{e:'🧘',l:'Ментальное здоровье'},{e:'✍️',l:'Дневник'},{e:'💤',l:'Сон'},{e:'❤️',l:'Забота о себе'}];
+var EMOJI_CATALOG=[
+ /* Спорт и движение */
+ {e:'🧘🏻‍♀️',l:'Йога'},{e:'🏋️',l:'Силовая тренировка'},{e:'🏃‍♀️',l:'Бег'},{e:'🚶‍♀️',l:'Прогулка'},
+ {e:'🚴‍♀️',l:'Велосипед'},{e:'🏊‍♀️',l:'Плавание'},{e:'💃',l:'Танцы'},{e:'🤸‍♀️',l:'Растяжка'},
+ {e:'🧘',l:'Медитация'},{e:'⚽',l:'Спорт'},{e:'🥾',l:'Походы'},{e:'🪷',l:'Баланс и спокойствие'},
+ /* Здоровье и уход */
+ {e:'💧',l:'Пить воду'},{e:'💊',l:'Витамины'},{e:'🧴',l:'Уход за кожей'},{e:'🪥',l:'Гигиена'},
+ {e:'🛁',l:'Ванна и отдых'},{e:'🧖‍♀️',l:'Маски и уход'},{e:'🦷',l:'Зубы'},{e:'🩺',l:'Здоровье'},
+ {e:'👁️',l:'Уход за глазами'},{e:'🧘‍♀️',l:'Дыхательные практики'},
+ /* Питание */
+ {e:'🥗',l:'Полезное питание'},{e:'🍎',l:'Фрукты'},{e:'🥦',l:'Овощи'},{e:'🍳',l:'Завтрак'},
+ {e:'🥣',l:'Домашняя еда'},{e:'🍵',l:'Чайный ритуал'},{e:'🚫🍬',l:'Меньше сладкого'},
+ /* Сон и восстановление */
+ {e:'💤',l:'Сон вовремя'},{e:'🌙',l:'Режим сна'},{e:'📵',l:'Без телефона'},{e:'🕯️',l:'Вечерний ритуал'},
+ {e:'🌿',l:'Отдых на природе'},
+ /* Учёба и развитие */
+ {e:'📚',l:'Чтение'},{e:'🎓',l:'Обучение'},{e:'📝',l:'Конспекты'},{e:'🧠',l:'Изучать новое'},
+ {e:'🌍',l:'Иностранный язык'},{e:'🎧',l:'Подкасты'},{e:'💻',l:'Работа за компьютером'},
+ {e:'🎨',l:'Творчество'},{e:'🎹',l:'Музыка'},{e:'📷',l:'Фотография'},
+ /* Дом и порядок */
+ {e:'🧹',l:'Уборка'},{e:'🧺',l:'Стирка'},{e:'🪴',l:'Забота о растениях'},{e:'🛏️',l:'Заправить кровать'},
+ {e:'🧽',l:'Порядок на кухне'},{e:'🗂️',l:'Разобрать дела'},
+ /* Финансы и работа */
+ {e:'💰',l:'Откладывать деньги'},{e:'💳',l:'Контроль расходов'},{e:'📊',l:'Планирование бюджета'},
+ {e:'💼',l:'Рабочие задачи'},{e:'✅',l:'План на день'},{e:'📅',l:'Планирование'},
+ /* Эмоции и забота о себе */
+ {e:'❤️',l:'Забота о себе'},{e:'✍️',l:'Дневник'},{e:'🙏',l:'Благодарность'},{e:'😊',l:'Настроение'},
+ {e:'🫶',l:'Время с близкими'},{e:'🐾',l:'Забота о питомце'},{e:'🌸',l:'Маленькие радости'},
+ {e:'🎯',l:'Личная цель'},{e:'🔥',l:'Мотивация'},{e:'☀️',l:'Утренний ритуал'}
+];
 var ICONS={
  home:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>',
  habits:'<svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>',
@@ -644,93 +652,9 @@ var ICONS={
 var NAV=[['home','Сегодня'],['habits','Привычки'],['progress','Прогресс'],['profile','Профиль']];
 var FLOWER='<svg viewBox="0 0 80 80"><g fill="#F6BCBA"><circle cx="40" cy="20" r="13"/><circle cx="59" cy="34" r="13"/><circle cx="52" cy="57" r="13"/><circle cx="28" cy="57" r="13"/><circle cx="21" cy="34" r="13"/></g><circle cx="40" cy="40" r="11" fill="#F4E7F0"/><circle cx="40" cy="40" r="5" fill="#E3AADD"/></svg>';
 
-function backupNow(){ try{ localStorage.setItem((currentUser?userStorageKey(currentUser.uid):STORAGE_KEY)+'_backup', JSON.stringify(state)); }catch(e){} }
+function backupNow(){ try{ localStorage.setItem(STORAGE_KEY+'_backup', JSON.stringify(state)); }catch(e){} }
 try{ var rawNow=localStorage.getItem(STORAGE_KEY); if(rawNow && !localStorage.getItem(STORAGE_KEY+'_premigration')) localStorage.setItem(STORAGE_KEY+'_premigration', rawNow); }catch(e){}
 (function normalizeOrders(){ state.trackers.sort(function(a,b){return a.order-b.order;}).forEach(function(t,i){ t.order=i; }); })();
-
-function renderAuthLoading(message){
-  document.querySelector('nav.bottom').style.display='none';
-  root.innerHTML='<div class="auth-screen"><div class="auth-flower">🌸</div><h1>Мой ритм</h1><p>'+esc(message||'Подключаем твои данные…')+'</p></div>';
-}
-function authErrorDetails(err, fallback){
-  var code = err && err.code ? String(err.code) : 'код не указан';
-  var message = err && err.message ? String(err.message) : (fallback || 'Подробности ошибки не получены.');
-  return (fallback ? fallback + ' ' : '') + 'Код: ' + code + '. Сообщение: ' + message;
-}
-function renderAuthScreen(errorText){
-  document.querySelector('nav.bottom').style.display='none';
-  root.innerHTML='<div class="auth-screen"><div class="auth-flower">🌸</div><h1>Мой ритм</h1><p>Войди через Google, чтобы хранить свои привычки и прогресс в личном облачном пространстве.</p>'+
-    (errorText?'<div class="err-msg auth-debug">'+esc(errorText)+'</div>':'')+
-    '<button class="auth-button" id="googleSignInBtn">Продолжить с Google</button><div class="auth-note">У каждого аккаунта свои привычки, отметки и статистика.</div></div>';
-  document.getElementById('googleSignInBtn').addEventListener('click',function(){
-    var btn=document.getElementById('googleSignInBtn');
-    btn.disabled=true;
-    btn.textContent='Переходим к Google…';
-    signInWithRedirect(auth, googleProvider).catch(function(err){
-      console.error('Ошибка запуска входа Google',err);
-      renderAuthScreen(authErrorDetails(err,'Не удалось начать вход через Google.'));
-    });
-  });
-}
-function renderAuthError(message){
-  document.querySelector('nav.bottom').style.display='none';
-  root.innerHTML='<div class="auth-screen"><div class="auth-flower">🌷</div><h1>Не удалось загрузить данные</h1><p>'+esc(message)+'</p><button class="auth-button" id="authRetryBtn">Повторить</button><div style="height:10px"></div><button class="btn ghost" id="authSignOutBtn">Выйти из аккаунта</button></div>';
-  document.getElementById('authRetryBtn').addEventListener('click',function(){ if(currentUser) initializeUserData(currentUser); });
-  document.getElementById('authSignOutBtn').addEventListener('click',function(){ signOut(auth); });
-}
-async function initializeUserData(user){
-  currentUser=user; cloudReady=false; cloudErrorShown=false;
-  if(cloudUnsubscribe){ cloudUnsubscribe(); cloudUnsubscribe=null; }
-  cloudDocRef=doc(db,'users',user.uid,'appData','main');
-  renderAuthLoading('Загружаем привычки и историю…');
-  try{
-    var remote=await getDoc(cloudDocRef);
-    if(!auth.currentUser || auth.currentUser.uid!==user.uid) return;
-    if(remote.exists()){
-      var remoteData=remote.data();
-      state=migrateState(remoteData.state || defaultData());
-    }else{
-      var cached=localStorage.getItem(userStorageKey(user.uid));
-      var legacyRaw=localStorage.getItem(STORAGE_KEY);
-      var migratedUid=localStorage.getItem(STORAGE_KEY+'_migrated_uid');
-      if(cached){
-        state=migrateState(JSON.parse(cached));
-        await setDoc(cloudDocRef,{state:state,updatedAt:serverTimestamp()},{merge:true});
-      }else if(legacyRaw && !migratedUid){
-        state=migrateState(JSON.parse(legacyRaw));
-        await setDoc(cloudDocRef,{state:state,updatedAt:serverTimestamp(),migratedFromLocal:true});
-        localStorage.setItem(STORAGE_KEY+'_migrated_uid',user.uid);
-      }else{
-        state=defaultData();
-        await setDoc(cloudDocRef,{state:state,updatedAt:serverTimestamp()});
-      }
-    }
-    localStorage.setItem(userStorageKey(user.uid),JSON.stringify(state));
-    cloudReady=true;
-    cloudUnsubscribe=onSnapshot(cloudDocRef,function(snap){
-      if(!currentUser || currentUser.uid!==user.uid || !snap.exists()) return;
-      var data=snap.data();
-      if(!data || !data.state) return;
-      var incoming=migrateState(data.state);
-      if(JSON.stringify(incoming)!==JSON.stringify(state)){
-        state=incoming;
-        try{ localStorage.setItem(userStorageKey(user.uid),JSON.stringify(state)); }catch(e){}
-        render();
-      }
-    },function(err){ console.error('Ошибка подписки Firestore',err); showToast('⚠️ Потеряно соединение с облаком'); });
-    document.querySelector('nav.bottom').style.display='';
-    render(true);
-  }catch(err){
-    console.error('Ошибка загрузки пользовательских данных',err);
-    cloudReady=false;
-    renderAuthError('Проверь подключение к интернету и попробуй ещё раз. Если ошибка повторится, проверим правила доступа Firestore.');
-  }
-}
-function handleSignOut(){
-  if(cloudUnsubscribe){ cloudUnsubscribe(); cloudUnsubscribe=null; }
-  currentUser=null; cloudReady=false; cloudDocRef=null; state=defaultData();
-  renderAuthScreen();
-}
 
 function buildNav(){
   var w=document.getElementById('navWrap');
@@ -1340,14 +1264,12 @@ function renderProfile(){
   function row(id,em,t,d){ return '<div class="settings-row link" id="'+id+'"><span><span class="em">'+em+'</span>'+t+(d?'<div class="desc">'+d+'</div>':'')+'</span><span class="chev">›</span></div>'; }
   function sw(id,t,on){ return '<div class="settings-row"><span>'+t+'</span><label class="switch"><input type="checkbox" id="'+id+'" '+(on?'checked':'')+'><span class="track"><span class="thumb"></span></span></label></div>'; }
   var h='<header class="section-header"><h1>Профиль</h1><div class="subtitle">Твои данные и настройки</div></header><div style="height:14px"></div>'+
-   '<div class="card account-card"><div class="account-info"><strong>Аккаунт Google</strong><div class="account-email">'+esc(currentUser&&currentUser.email?currentUser.email:'Вход выполнен')+'</div></div><button class="btn sm secondary" id="signOutBtn">Выйти</button></div>'+
    '<div class="settings-section"><div class="settings-list">'+row('rowHistory','📖','История периодов')+row('rowArchive','🗄️','Архив привычек')+'</div></div>'+
    '<div class="settings-section"><h3>Настройки</h3><div class="settings-list">'+sw('swVibration','Вибрация при отметке',state.settings.vibration)+sw('swAnimations','Анимации',state.settings.animations)+'</div></div>'+
    '<div class="settings-section"><h3>Данные</h3><div class="settings-list">'+row('rowExport','💾','Экспорт (JSON)')+row('rowImport','📥','Импорт резервной копии')+'</div></div>'+
-   '<div class="settings-section"><h3>О приложении</h3><div class="about-text">Мой ритм — храни привычки, отмечай дни и следи за прогрессом. Привычки, отметки и статистика сохраняются в личном облачном пространстве твоего аккаунта Google. Локальная копия помогает быстрее открывать приложение.</div></div>'+
+   '<div class="settings-section"><h3>О приложении</h3><div class="about-text">Мой ритм — храни привычки, отмечай дни и следи за прогрессом. Все данные хранятся локально на этом устройстве. Делай экспорт, чтобы не потерять их при смене браузера или устройства.</div></div>'+
    '<div class="settings-section"><h3>Опасная зона</h3><button class="btn danger" id="stReset">Удалить все данные</button></div>';
   root.innerHTML=h;
-  document.getElementById('signOutBtn').addEventListener('click',function(){ signOut(auth).catch(function(e){ console.error(e); showToast('Не удалось выйти из аккаунта'); }); });
   document.getElementById('swVibration').addEventListener('change',function(e){ state.settings.vibration=e.target.checked; saveState(); });
   document.getElementById('swAnimations').addEventListener('change',function(e){ state.settings.animations=e.target.checked; saveState(); applyAnimSetting(); });
   document.getElementById('rowArchive').addEventListener('click',openArchiveSheet);
@@ -1448,35 +1370,7 @@ function confirmResetAll(){
 
 /* ===================== ЗАПУСК ===================== */
 buildNav();
-renderAuthLoading('Проверяем вход в аккаунт…');
-
-// Сначала дожидаемся обработки результата Google Redirect и только потом
-// подписываемся на состояние авторизации. Это исключает гонку, при которой
-// начальный null от onAuthStateChanged успевает показать экран входа.
-(async function startAuthentication(){
-  var redirectError = null;
-  try{
-    await getRedirectResult(auth);
-  }catch(err){
-    redirectError = err;
-    console.error('Ошибка возврата после входа Google',err);
-  }
-
-  onAuthStateChanged(auth,function(user){
-    if(user){
-      initializeUserData(user);
-    }else{
-      currentUser=null;
-      cloudReady=false;
-      cloudDocRef=null;
-      state=defaultData();
-      renderAuthScreen(redirectError ? authErrorDetails(redirectError,'Google не завершил вход.') : '');
-    }
-  },function(err){
-    console.error('Ошибка отслеживания состояния авторизации',err);
-    renderAuthScreen(authErrorDetails(err,'Не удалось проверить состояние входа.'));
-  });
-})();
+render(true);
 })();
 </script>
 </body>
