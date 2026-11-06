@@ -253,19 +253,6 @@
  --shadow-sm:0 4px 18px rgba(200,168,233,.20); --shadow-md:0 10px 32px rgba(200,168,233,.34);
  --radius-lg:26px; --radius-md:20px;
  --accent-grad:linear-gradient(135deg,#F6BCBA 0%,#E3AADD 55%,#C8A8E9 100%);
- /* Дополнительные оттенки для карточек привычек */
- --mint-bg:#E2F3EC;       --mint-dot:#8BCDB5;       --mint-text:#438A70;
- --sage-bg:#E9F0E2;       --sage-dot:#A9C18F;       --sage-text:#66834F;
- --lavender-bg:#F0E8FA;   --lavender-dot:#C5A8E8;   --lavender-text:#8060AA;
- --lilac-bg:#F5E8F2;      --lilac-dot:#D9A9CE;      --lilac-text:#9A648F;
- --rose-bg:#F9E4E9;       --rose-dot:#E99CAF;       --rose-text:#AD5C73;
- --coral-bg:#FBE8E1;      --coral-dot:#F0A18C;      --coral-text:#B96B57;
- --apricot-bg:#FCEEDC;    --apricot-dot:#E9B879;    --apricot-text:#A9793F;
- --lemon-bg:#F8F2D9;      --lemon-dot:#DCC76F;      --lemon-text:#95813A;
- --aqua-bg:#E0F2F4;       --aqua-dot:#83C7D0;       --aqua-text:#438A94;
- --sky-bg:#E4F0FA;        --sky-dot:#8CB9E2;        --sky-text:#527FA8;
- --periwinkle-bg:#E8EAF9; --periwinkle-dot:#A5ADE3; --periwinkle-text:#6873AE;
- --plum-bg:#F0E4F0;       --plum-dot:#B98CB8;       --plum-text:#805A80;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Rounded","SF Pro Text","Segoe UI",Roboto,sans-serif;
  background:linear-gradient(180deg,#F4E7F0 0%,#FBF5F9 38%,#F6F0FB 100%) fixed; background-color:#FBF5F9;}
@@ -339,13 +326,6 @@ nav.bottom button.active{background:linear-gradient(135deg,#F9E3EA,#EBDFF8);colo
 .switch input:checked + .track{background:#C8A8E9}
 .period-card.current{border:1.5px solid #E3AADD}
 .settings-row .em{margin-right:10px}
-
-/* Расширенные каталоги в форме привычки */
-.color-grid{gap:13px; padding:3px 2px 7px;}
-.swatch{width:40px;height:40px;flex:0 0 40px;box-shadow:inset 0 0 0 1px rgba(58,47,74,.06);}
-.emoji-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-height:54vh;overflow-y:auto;padding:4px 3px 10px;overscroll-behavior:contain;}
-.emoji-tile{min-height:84px;}
-
 </style>
 
 </head>
@@ -422,28 +402,16 @@ function makeId(){ return 'id-' + Date.now().toString(36) + '-' + Math.random().
 
 /* ===================== ЦВЕТОВАЯ ПАЛИТРА ===================== */
 var PALETTE = [
-  {key:'pink',       label:'Пудровый',       bg:'var(--pink-bg)',       dot:'var(--pink-dot)',       text:'var(--pink-text)'},
-  {key:'purple',     label:'Лавандовый',     bg:'var(--purple-bg)',     dot:'var(--purple-dot)',     text:'var(--purple-text)'},
-  {key:'blue',       label:'Сиренево-голубой',bg:'var(--blue-bg)',      dot:'var(--blue-dot)',      text:'var(--blue-text)'},
-  {key:'green',      label:'Розово-сиреневый',bg:'var(--green-bg)',     dot:'var(--green-dot)',     text:'var(--green-text)'},
-  {key:'peach',      label:'Персиковый',     bg:'var(--peach-bg)',      dot:'var(--peach-dot)',      text:'var(--peach-text)'},
-  {key:'yellow',     label:'Молочно-розовый',bg:'var(--yellow-bg)',     dot:'var(--yellow-dot)',     text:'var(--yellow-text)'},
-  {key:'navy',       label:'Синий',          bg:'var(--navy-bg)',       dot:'var(--navy-dot)',       text:'var(--navy-text)'},
-  {key:'light',      label:'Светлый',        bg:'var(--light-bg)',      dot:'var(--light-dot)',      text:'var(--light-text)'},
-  {key:'mint',       label:'Мятный',         bg:'var(--mint-bg)',       dot:'var(--mint-dot)',       text:'var(--mint-text)'},
-  {key:'sage',       label:'Шалфейный',      bg:'var(--sage-bg)',       dot:'var(--sage-dot)',       text:'var(--sage-text)'},
-  {key:'lavender',   label:'Светлая лаванда',bg:'var(--lavender-bg)',   dot:'var(--lavender-dot)',   text:'var(--lavender-text)'},
-  {key:'lilac',      label:'Сиреневый',      bg:'var(--lilac-bg)',      dot:'var(--lilac-dot)',      text:'var(--lilac-text)'},
-  {key:'rose',       label:'Розовый',        bg:'var(--rose-bg)',       dot:'var(--rose-dot)',       text:'var(--rose-text)'},
-  {key:'coral',      label:'Коралловый',     bg:'var(--coral-bg)',      dot:'var(--coral-dot)',      text:'var(--coral-text)'},
-  {key:'apricot',    label:'Абрикосовый',    bg:'var(--apricot-bg)',    dot:'var(--apricot-dot)',    text:'var(--apricot-text)'},
-  {key:'lemon',      label:'Лимонный',       bg:'var(--lemon-bg)',      dot:'var(--lemon-dot)',      text:'var(--lemon-text)'},
-  {key:'aqua',       label:'Аквамариновый',  bg:'var(--aqua-bg)',       dot:'var(--aqua-dot)',       text:'var(--aqua-text)'},
-  {key:'sky',        label:'Небесный',       bg:'var(--sky-bg)',        dot:'var(--sky-dot)',        text:'var(--sky-text)'},
-  {key:'periwinkle', label:'Барвинок',       bg:'var(--periwinkle-bg)', dot:'var(--periwinkle-dot)', text:'var(--periwinkle-text)'},
-  {key:'plum',       label:'Сливовый',       bg:'var(--plum-bg)',       dot:'var(--plum-dot)',       text:'var(--plum-text)'}
+  {key:'pink',   label:'Розовый',    bg:'var(--pink-bg)',   dot:'var(--pink-dot)',   text:'var(--pink-text)'},
+  {key:'purple', label:'Сиреневый',  bg:'var(--purple-bg)', dot:'var(--purple-dot)', text:'var(--purple-text)'},
+  {key:'blue',   label:'Голубой',    bg:'var(--blue-bg)',   dot:'var(--blue-dot)',   text:'var(--blue-text)'},
+  {key:'green',  label:'Зелёный',    bg:'var(--green-bg)',  dot:'var(--green-dot)',  text:'var(--green-text)'},
+  {key:'peach',  label:'Персиковый', bg:'var(--peach-bg)',  dot:'var(--peach-dot)',  text:'var(--peach-text)'},
+  {key:'yellow', label:'Жёлтый',     bg:'var(--yellow-bg)', dot:'var(--yellow-dot)', text:'var(--yellow-text)'},
+  {key:'navy',   label:'Синий',      bg:'var(--navy-bg)',   dot:'var(--navy-dot)',   text:'var(--navy-text)'},
+  {key:'light',  label:'Светлый',    bg:'var(--light-bg)',  dot:'var(--light-dot)',  text:'var(--light-text)'}
 ];
-var PICKER_KEYS = PALETTE.map(function(p){ return p.key; });
+var PICKER_KEYS = ['pink','purple','blue','green','peach','yellow'];
 function paletteByKey(key){
   for(var i=0;i<PALETTE.length;i++){ if(PALETTE[i].key === key) return PALETTE[i]; }
   return PALETTE[0];
@@ -611,39 +579,12 @@ function todayProgress(){
 
 /* ===================== ЯДРО НОВОГО UI ===================== */
 function esc(s){ var d=document.createElement('div'); d.textContent=s==null?'':String(s); return d.innerHTML; }
-// Названия цветов уже заданы в палитре выше.
+PALETTE.forEach(function(p){ p.label={pink:'Пудровый',purple:'Лавандовый',blue:'Сиренево-голубой',green:'Розово-сиреневый',peach:'Персиковый',yellow:'Молочно-розовый',navy:'Синий',light:'Светлый'}[p.key]||p.label; });
 var root=document.getElementById('app');
 var currentTab='home', weekOffset=0, progRange='week';
-var EMOJI_CATALOG=[
- /* Спорт и движение */
- {e:'🧘🏻‍♀️',l:'Йога'},{e:'🏋️',l:'Силовая тренировка'},{e:'🏃‍♀️',l:'Бег'},{e:'🚶‍♀️',l:'Прогулка'},
- {e:'🚴‍♀️',l:'Велосипед'},{e:'🏊‍♀️',l:'Плавание'},{e:'💃',l:'Танцы'},{e:'🤸‍♀️',l:'Растяжка'},
- {e:'🧘',l:'Медитация'},{e:'⚽',l:'Спорт'},{e:'🥾',l:'Походы'},{e:'🪷',l:'Баланс и спокойствие'},
- /* Здоровье и уход */
- {e:'💧',l:'Пить воду'},{e:'💊',l:'Витамины'},{e:'🧴',l:'Уход за кожей'},{e:'🪥',l:'Гигиена'},
- {e:'🛁',l:'Ванна и отдых'},{e:'🧖‍♀️',l:'Маски и уход'},{e:'🦷',l:'Зубы'},{e:'🩺',l:'Здоровье'},
- {e:'👁️',l:'Уход за глазами'},{e:'🧘‍♀️',l:'Дыхательные практики'},
- /* Питание */
- {e:'🥗',l:'Полезное питание'},{e:'🍎',l:'Фрукты'},{e:'🥦',l:'Овощи'},{e:'🍳',l:'Завтрак'},
- {e:'🥣',l:'Домашняя еда'},{e:'🍵',l:'Чайный ритуал'},{e:'🚫🍬',l:'Меньше сладкого'},
- /* Сон и восстановление */
- {e:'💤',l:'Сон вовремя'},{e:'🌙',l:'Режим сна'},{e:'📵',l:'Без телефона'},{e:'🕯️',l:'Вечерний ритуал'},
- {e:'🌿',l:'Отдых на природе'},
- /* Учёба и развитие */
- {e:'📚',l:'Чтение'},{e:'🎓',l:'Обучение'},{e:'📝',l:'Конспекты'},{e:'🧠',l:'Изучать новое'},
- {e:'🌍',l:'Иностранный язык'},{e:'🎧',l:'Подкасты'},{e:'💻',l:'Работа за компьютером'},
- {e:'🎨',l:'Творчество'},{e:'🎹',l:'Музыка'},{e:'📷',l:'Фотография'},
- /* Дом и порядок */
- {e:'🧹',l:'Уборка'},{e:'🧺',l:'Стирка'},{e:'🪴',l:'Забота о растениях'},{e:'🛏️',l:'Заправить кровать'},
- {e:'🧽',l:'Порядок на кухне'},{e:'🗂️',l:'Разобрать дела'},
- /* Финансы и работа */
- {e:'💰',l:'Откладывать деньги'},{e:'💳',l:'Контроль расходов'},{e:'📊',l:'Планирование бюджета'},
- {e:'💼',l:'Рабочие задачи'},{e:'✅',l:'План на день'},{e:'📅',l:'Планирование'},
- /* Эмоции и забота о себе */
- {e:'❤️',l:'Забота о себе'},{e:'✍️',l:'Дневник'},{e:'🙏',l:'Благодарность'},{e:'😊',l:'Настроение'},
- {e:'🫶',l:'Время с близкими'},{e:'🐾',l:'Забота о питомце'},{e:'🌸',l:'Маленькие радости'},
- {e:'🎯',l:'Личная цель'},{e:'🔥',l:'Мотивация'},{e:'☀️',l:'Утренний ритуал'}
-];
+var EMOJI_CATALOG=[ /* для расширения каталога просто добавьте {e:'🌿',l:'Подпись'} */
+ {e:'🧘🏻‍♀️',l:'Спорт и йога'},{e:'📚',l:'Чтение'},{e:'🧴',l:'Уход за собой'},{e:'🎓',l:'Обучение'},{e:'💧',l:'Вода'},
+ {e:'🥗',l:'Питание'},{e:'🧘',l:'Ментальное здоровье'},{e:'✍️',l:'Дневник'},{e:'💤',l:'Сон'},{e:'❤️',l:'Забота о себе'}];
 var ICONS={
  home:'<svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>',
  habits:'<svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>',
@@ -1120,36 +1061,74 @@ function cssv(n){ return getComputedStyle(document.documentElement).getPropertyV
 function rrect(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
 function fitText(c,s,max){ if(c.measureText(s).width<=max) return s; while(s.length>1 && c.measureText(s+'…').width>max) s=s.slice(0,-1); return s+'…'; }
 function dayImage(){
-  var W=1080,P=64,tr=activeTrackers(),per=getCurrentPeriod(),today=todayStr(),tp=todayProgress();
-  var rowH=128,gap=20,top=680,H=top+tr.length*(rowH+gap)+150;
+  var W=1080,P=48,tr=activeTrackers(),per=getCurrentPeriod(),today=todayStr();
+  var dates=weekDates(weekOffset), cardH=370, gap=22, cardsTop=560;
+  var H=cardsTop+tr.length*(cardH+gap)-gap+58;
   var cv=document.createElement('canvas'); cv.width=W; cv.height=H; var c=cv.getContext('2d');
   var F='-apple-system,"SF Pro Rounded","Segoe UI",Roboto,sans-serif';
-  var g=c.createLinearGradient(0,0,0,H); g.addColorStop(0,'#F4E7F0'); g.addColorStop(.5,'#FBF5F9'); g.addColorStop(1,'#EFE5FA'); c.fillStyle=g; c.fillRect(0,0,W,H);
+  var bg=c.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#F4E7F0'); bg.addColorStop(.52,'#FBF5F9'); bg.addColorStop(1,'#F1E9F8');
+  c.fillStyle=bg; c.fillRect(0,0,W,H);
   c.textBaseline='alphabetic'; c.textAlign='left';
-  c.fillStyle='#B58BDD'; c.font='700 34px '+F; c.fillText('МОЙ РИТМ',P,110);
-  c.fillStyle='#3A2F4A'; c.font='800 70px '+F; c.fillText(greeting()+' 🌸',P,205);
-  c.fillStyle='#8E8099'; c.font='600 38px '+F; c.fillText(fmtTodayHeader(),P,268);
-  var cg=c.createLinearGradient(P,330,W-P,570); cg.addColorStop(0,'#F6BCBA'); cg.addColorStop(.55,'#E3AADD'); cg.addColorStop(1,'#C8A8E9');
-  c.fillStyle=cg; rrect(c,P,330,W-2*P,250,60); c.fill();
-  var cx=P+150,cy=455; c.lineWidth=20; c.lineCap='round';
-  c.strokeStyle='rgba(255,255,255,.35)'; c.beginPath(); c.arc(cx,cy,74,0,Math.PI*2); c.stroke();
-  if(tp.pct>0){ c.strokeStyle='#fff'; c.beginPath(); c.arc(cx,cy,74,-Math.PI/2,-Math.PI/2+Math.PI*2*tp.pct/100); c.stroke(); }
+
+  // Заголовок — без названия приложения и декоративного логотипа.
+  c.fillStyle='#3A2F4A'; c.font='800 68px '+F;
+  c.fillText(greeting()+' 🌸',P,112);
+  c.fillStyle='#8E8099'; c.font='600 36px '+F;
+  c.fillText(fmtTodayHeader(),P,174);
+
+  // Карточка прогресса за день.
+  var tp=todayProgress(), px=P, py=226, pw=W-2*P, ph=250;
+  var pg=c.createLinearGradient(px,py,px+pw,py+ph);
+  pg.addColorStop(0,'#F6BCBA'); pg.addColorStop(.55,'#E3AADD'); pg.addColorStop(1,'#C8A8E9');
+  c.fillStyle=pg; rrect(c,px,py,pw,ph,54); c.fill();
+  var cx=px+128, cy=py+125, rr=76;
+  c.lineWidth=18; c.lineCap='round'; c.strokeStyle='rgba(255,255,255,.38)';
+  c.beginPath(); c.arc(cx,cy,rr,0,Math.PI*2); c.stroke();
+  if(tp.pct>0){ c.strokeStyle='#fff'; c.beginPath(); c.arc(cx,cy,rr,-Math.PI/2,-Math.PI/2+Math.PI*2*tp.pct/100); c.stroke(); }
   c.fillStyle='#fff'; c.textAlign='center'; c.font='800 46px '+F; c.fillText(tp.pct+'%',cx,cy+16); c.textAlign='left';
-  c.font='700 34px '+F; c.globalAlpha=.92; c.fillText('Прогресс за сегодня',P+300,420); c.globalAlpha=1;
-  c.font='800 56px '+F; c.fillText(tp.done+' из '+tp.total+' выполнено',P+300,490);
-  c.font='600 32px '+F; c.globalAlpha=.9; c.fillText('Активных привычек: '+tp.total,P+300,540); c.globalAlpha=1;
-  c.fillStyle='#3A2F4A'; c.font='800 46px '+F; c.fillText('Мои привычки',P,top-40);
+  c.fillStyle='rgba(255,255,255,.94)'; c.font='700 34px '+F; c.fillText('Прогресс за сегодня',px+260,py+92);
+  c.fillStyle='#fff'; c.font='800 54px '+F; c.fillText(tp.done+' из '+tp.total+' выполнено',px+260,py+160);
+  c.fillStyle='rgba(255,255,255,.94)'; c.font='600 30px '+F; c.fillText('Активных привычек: '+tp.total,px+260,py+207);
+
+  // Все активные привычки — отдельными карточками, как на главном экране.
   tr.forEach(function(t,i){
-    var y=top+i*(rowH+gap), pal=paletteByKey(t.colorKey), done=!!(per && bucketReadOnly(per,t.id)[today]);
-    c.fillStyle=cssv(pal.bg.slice(4,-1)); rrect(c,P,y,W-2*P,rowH,46); c.fill();
-    c.font='56px '+F; c.fillStyle='#000'; c.fillText(t.emoji,P+38,y+rowH/2+20);
-    c.fillStyle='#3A2F4A'; c.font='700 40px '+F; c.fillText(fitText(c,t.title,W-2*P-130-150),P+140,y+rowH/2+14);
-    var ox=W-P-70, oy=y+rowH/2;
-    if(done){ c.fillStyle=cssv(pal.dot.slice(4,-1)); c.beginPath(); c.arc(ox,oy,38,0,Math.PI*2); c.fill();
-      c.strokeStyle='#fff'; c.lineWidth=9; c.lineCap='round'; c.lineJoin='round'; c.beginPath(); c.moveTo(ox-15,oy+2); c.lineTo(ox-4,oy+14); c.lineTo(ox+17,oy-12); c.stroke(); }
-    else { c.strokeStyle='rgba(255,255,255,.95)'; c.lineWidth=7; c.fillStyle='rgba(255,255,255,.6)'; c.beginPath(); c.arc(ox,oy,36,0,Math.PI*2); c.fill(); c.stroke(); }
+    var y=cardsTop+i*(cardH+gap), pal=paletteByKey(t.colorKey);
+    var bucket=per?bucketReadOnly(per,t.id):{};
+    var st=per?trackerStreaks(per,t.id):{current:0};
+    c.fillStyle=cssv(pal.bg.slice(4,-1)); rrect(c,P,y,W-2*P,cardH,48); c.fill();
+
+    c.textAlign='left'; c.fillStyle='#3A2F4A'; c.font='56px '+F;
+    c.fillText(t.emoji,P+38,y+76);
+    c.font='700 42px '+F;
+    c.fillText(fitText(c,t.title,W-2*P-150),P+126,y+76);
+
+    var left=P+100, right=W-P-100, cellW=(right-left)/7;
+    dates.forEach(function(d,j){
+      var x=left+cellW*j+cellW/2, done=!!bucket[d], future=d>today;
+      c.textAlign='center'; c.fillStyle=(d===today?'#62566D':'#B8ADBE');
+      c.font='700 24px '+F; c.fillText(dowShort(d),x,y+132);
+      c.beginPath(); c.arc(x,y+194,43,0,Math.PI*2);
+      c.fillStyle=done?cssv(pal.dot.slice(4,-1)):'rgba(255,255,255,.42)'; c.fill();
+      c.lineWidth=(d===today?5:3); c.strokeStyle=done?'rgba(255,255,255,.45)':'rgba(255,255,255,.78)'; c.stroke();
+      if(done){
+        c.strokeStyle='#fff'; c.lineWidth=9; c.lineCap='round'; c.lineJoin='round';
+        c.beginPath(); c.moveTo(x-16,y+194); c.lineTo(x-4,y+207); c.lineTo(x+19,y+181); c.stroke();
+      }
+      if(d===today){
+        c.beginPath(); c.arc(x,y+194,51,0,Math.PI*2); c.lineWidth=4; c.strokeStyle=cssv(pal.dot.slice(4,-1)); c.stroke();
+      }
+      c.fillStyle=future?'#CFC5D4':(d===today?'#3A2F4A':'#B8ADBE');
+      c.font=(d===today?'800 ':'600 ')+'25px '+F;
+      c.fillText(String(parseYMD(d).d),x,y+270);
+    });
+
+    c.textAlign='left'; c.fillStyle=cssv(pal.text.slice(4,-1)); c.font='700 27px '+F;
+    c.fillText('🔥 '+st.current+' '+dayWord(st.current)+' подряд',P+38,y+335);
+    var ps=per?periodStats(per,t.id):{done:0,total:0,pct:0};
+    c.textAlign='right'; c.fillStyle='#7E7188'; c.font='600 27px '+F;
+    c.fillText(ps.done+' / '+ps.total+' · '+ps.pct+'%',W-P-38,y+335);
   });
-  c.fillStyle='#A798B4'; c.font='600 30px '+F; c.textAlign='center'; c.fillText('Сохранено в приложении «Мой ритм»',W/2,H-60);
   return cv;
 }
 function saveDayImage(){
